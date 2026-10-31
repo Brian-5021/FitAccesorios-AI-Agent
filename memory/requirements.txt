@@ -1,0 +1,8 @@
+streamlit>=1.40
+google-genai
+python-dotenv
+pypdf
+reportlab
+ddgs
+requests
+beautifulsoup4

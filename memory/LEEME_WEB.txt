@@ -1,0 +1,26 @@
+# FitAccesorios AI — Interfaz web
+
+## Qué incluye
+- Interfaz web para ejecutar investigación, contenido, conversión, SEO y prospección.
+- Consulta general sobre la base documental.
+- Acceso con contraseña.
+- Descarga de informes.
+
+## Prueba local (Windows / PowerShell)
+1. Instala dependencias:
+   `py -m pip install -r requirements.txt`
+2. Crea un archivo `.env` con:
+   `GEMINI_API_KEY=TU_CLAVE_NUEVA`
+   `APP_PASSWORD=UNA_CONTRASENA_LARGA_Y_UNICA`
+3. Inicia:
+   `py -m streamlit run app.py`
+4. Abre la dirección local que muestra Streamlit.
+
+## Publicación
+El archivo `render.yaml` define el servicio web. En Render:
+1. Conecta el repositorio GitHub.
+2. Crea el servicio desde el Blueprint (`render.yaml`).
+3. Configura `GEMINI_API_KEY` y `APP_PASSWORD` como variables secretas.
+4. Para conservar informes e historial entre despliegues, agrega un Persistent Disk y configura su montaje en `/opt/render/project/src/reports` y `/opt/render/project/src/memory` (o adapta las rutas del proyecto).
+
+No subas `.env`, `.git`, ni claves a GitHub. Rota cualquier API key que haya sido compartida en un ZIP.

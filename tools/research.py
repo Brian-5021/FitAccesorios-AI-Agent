@@ -8,6 +8,7 @@ from .web_reader import leer_pagina
 import os
 from pathlib import Path
 from datetime import datetime
+import json
 
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -61,7 +62,7 @@ def guardar_informe(pregunta, contenido):
 
     contenido_archivo = f"""# Investigación FitAccesorios
 
-**Fecha:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+**Fecha de consulta:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 **Consulta:** {pregunta}
 
@@ -197,6 +198,26 @@ def investigar(pregunta):
         print("No fue posible extraer contenido de las páginas.")
         return
 
+    fecha_consulta = datetime.now().isoformat(timespec="seconds")
+    carpeta_reports = Path(__file__).parent.parent / "reports"
+    carpeta_reports.mkdir(parents=True, exist_ok=True)
+    fecha_archivo = datetime.now().strftime("%Y%m%d_%H%M%S")
+    registro_fuentes = carpeta_reports / f"fuentes_investigacion_{fecha_archivo}.json"
+    fuentes = [
+        {
+            "url": pagina.get("url", ""),
+            "titulo": pagina.get("titulo", ""),
+            "fecha_consulta": fecha_consulta,
+            "extracto": (pagina.get("contenido") or "")[:1800],
+        }
+        for pagina in paginas
+    ]
+    registro_fuentes.write_text(
+        json.dumps(fuentes, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
+    print(f"Registro de evidencias: {registro_fuentes}")
+
     contexto = ""
 
     for pagina in paginas:
@@ -228,6 +249,8 @@ para el entrenamiento personalizado.
 SOLICITUD:
 {pregunta}
 
+FECHA DE CONSULTA: {fecha_consulta}
+
 INFORMACIÓN EXTRAÍDA DE PÁGINAS WEB:
 {contexto}
 
@@ -243,8 +266,11 @@ indirecto o referencia de mercado.
 seguimiento y canales de comunicación.
 6. Incluye la URL que respalda cada dato.
 7. No confundas blogs o directorios con competidores.
-8. Diferencia hechos de recomendaciones.
-9. Finaliza con oportunidades para FitAccesorios.
+8. Cada precio debe quedar asociado a la URL específica que lo respalda; si no se puede asociar, marca "no verificado".
+9. No extrapoles condiciones de un plan a otros planes.
+10. No conviertas hipótesis comerciales en ventajas competitivas demostradas.
+11. Diferencia hechos de recomendaciones.
+12. Finaliza con oportunidades para FitAccesorios.
 
 FORMATO:
 
@@ -269,6 +295,7 @@ FORMATO:
 
     guardar_informe(pregunta, informe)
     guardar_pdf(pregunta, informe)
+    print(f"Registro de evidencias guardado en: {registro_fuentes}")
 
 
 if __name__ == "__main__":
